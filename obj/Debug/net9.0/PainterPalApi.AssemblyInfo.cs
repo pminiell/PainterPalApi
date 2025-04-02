@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PainterPalApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+58ed87197ce36220fe18bca26bd38ca93af6d79d")]
 [assembly: System.Reflection.AssemblyProductAttribute("PainterPalApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PainterPalApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

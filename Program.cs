@@ -52,6 +52,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("react-policy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
