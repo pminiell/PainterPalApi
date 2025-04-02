@@ -1,0 +1,6 @@
+@PainterPalApi_HostAddress = http://localhost:5101
+
+GET {{PainterPalApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
