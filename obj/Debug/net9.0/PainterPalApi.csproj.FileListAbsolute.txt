@@ -138,3 +138,6 @@
 /home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/obj/Debug/net9.0/PainterPalApi.genruntimeconfig.cache
 /home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/obj/Debug/net9.0/ref/PainterPalApi.dll
 /home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/obj/Debug/net9.0/PainterPalApi.sourcelink.json
+/home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/bin/Debug/net9.0/Swashbuckle.AspNetCore.Swagger.dll
+/home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerGen.dll
+/home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll

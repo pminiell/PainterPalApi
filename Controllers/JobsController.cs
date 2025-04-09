@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PainterPalApi.Data;
+using PainterPalApi.DTOs;
 using PainterPalApi.Models;
 using System;
 using System.Collections.Generic;
@@ -23,24 +24,41 @@ namespace PainterPalApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJobs([FromQuery] string status = null)
+        public async Task<ActionResult<IEnumerable<JobSummaryDTO>>> GetJobs([FromQuery] string status = null)
         {
-            var query = _context.Jobs.AsQueryable();
+            var query = _context.Jobs
+                .Include(j => j.Customer)
+                .AsQueryable();
             
-            // Filter by status if provided
             if (Enum.TryParse<JobStatus>(status, out var jobStatus))
             {
                 query = query.Where(j => j.JobStatus == jobStatus);
             }
+            
+            var jobs = await query.ToListAsync();
+            
+            // Map to DTO
+            var jobDTOs = jobs.Select(j => new JobSummaryDTO
+            {
+                Id = j.Id,
+                JobName = j.JobName,
+                JobLocation = j.JobLocation,
+                JobStatus = j.JobStatus,
+                StartDate = j.StartDate,
+                EndDate = j.EndDate,
+                CustomerId = j.CustomerId,
+                CustomerName = j.Customer?.CustomerName
+            }).ToList();
 
-            return await query.ToListAsync();
+            return jobDTOs;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Job>> GetJob(int id)
+        public async Task<ActionResult<JobDetailDTO>> GetJob(int id)
         {
             var job = await _context.Jobs
-                .Include(j => j.Customer) // Include related customer data
+                .Include(j => j.Customer)
+                .Include(j => j.PreferredColours)
                 .FirstOrDefaultAsync(j => j.Id == id);
 
             if (job == null)
@@ -48,15 +66,71 @@ namespace PainterPalApi.Controllers
                 return NotFound();
             }
 
-            return job;
+            // Map to DTO
+            var jobDTO = new JobDetailDTO
+            {
+                Id = job.Id,
+                JobName = job.JobName,
+                JobNotes = job.JobNotes,
+                JobLocation = job.JobLocation,
+                JobStatus = job.JobStatus,
+                Tags = job.Tags,
+                Tasks = job.Tasks,
+                StartDate = job.StartDate,
+                EndDate = job.EndDate,
+                CreatedAt = job.CreatedAt,
+                UpdatedAt = job.UpdatedAt,
+                CompletionDate = job.CompletionDate,
+                Customer = job.Customer != null ? new CustomerSummaryDTO
+                {
+                    Id = job.Customer.Id,
+                    CustomerName = job.Customer.CustomerName,
+                    CustomerEmail = job.Customer.CustomerEmail,
+                    CustomerPhone = job.Customer.CustomerPhone,
+                    CustomerAddress = job.Customer.CustomerAddress
+                } : null,
+                PreferredColours = job.PreferredColours.Select(c => new ColourSummaryDTO
+                {
+                    Id = c.Id,
+                    Name = c.ColourName,
+                    Code = c.ColourCode,
+                    Usage = c.ColourUsage
+                }).ToList()
+            };
+
+            return jobDTO;
         }
 
         [HttpPost]
         [Authorize(Policy = "BusinessOwnerPolicy")] // Only business owners can create jobs
-        public async Task<ActionResult<Job>> CreateJob(Job job)
+        //create a jobcreation DTO for only necessary fields
+        public async Task<ActionResult<Job>> CreateJob(CreateJobDTO jobDto)
         {
-            // Set creation date
-            job.CreatedAt = DateTime.Now;
+            
+            var job = new Job {
+                CustomerId = jobDto.CustomerId,
+                JobName = jobDto.JobName,
+                JobNotes = jobDto.JobNotes ?? string.Empty,
+                JobLocation = jobDto.JobLocation,
+                StartDate = jobDto.StartDate.ToUniversalTime(),
+                EndDate = jobDto.EndDate.ToUniversalTime(),
+                Tags =  jobDto.Tags ?? new List<string>(), // Initialize to empty list if null
+                Tasks = jobDto.Tasks ?? new List<string>(), // Initialize to empty list if null
+                JobStatus = JobStatus.Pending,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            };
+
+            if(jobDto.PreferredColourIds?.Count > 0){
+                var colours = await _context.Colours
+                    .Where(c => jobDto.PreferredColourIds.Contains(c.Id))
+                    .ToListAsync();
+
+                foreach (var colour in colours)
+                {
+                    job.PreferredColours.Add(colour);
+                }
+            }
             
             _context.Jobs.Add(job);
             await _context.SaveChangesAsync();
@@ -111,7 +185,7 @@ namespace PainterPalApi.Controllers
             // If status is "Completed", set completion date
             if (model.Status.Equals("Completed"))
             { 
-                job.CompletionDate = DateTime.Now;
+                job.CompletionDate = DateTime.UtcNow;
             }
 
             await _context.SaveChangesAsync();
@@ -175,7 +249,7 @@ namespace PainterPalApi.Controllers
             {
                 JobId = id,
                 EmployeeId = model.EmployeeId,
-                AssignedDate = DateTime.Now
+                AssignedDate = DateTime.UtcNow
             };
 
             _context.JobEmployees.Add(assignment);
