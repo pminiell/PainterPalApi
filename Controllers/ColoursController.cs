@@ -135,7 +135,7 @@ namespace PainterPalApi.Controllers
             }
 
             // Check if colour is used in any product preferences before deleting
-            var isUsed = await _context.ProductPreferences.AnyAsync(pp => pp.PreferredColourId == id);
+            var isUsed = await _context.UserPreferredColours.AnyAsync(pp => pp.ColourId == id);
             if (isUsed)
             {
                 return BadRequest("This colour is being used in product preferences and cannot be deleted");

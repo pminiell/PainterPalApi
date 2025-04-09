@@ -78,7 +78,7 @@ namespace PainterPalApi.Controllers
             }
 
             // Check for name uniqueness (excluding current material)
-            if (await _context.Materials.AnyAsync(m => 
+            if (await _context.Materials.AnyAsync(m =>
                 m.MaterialName == material.MaterialName && m.Id != id))
             {
                 return BadRequest("A material with this name already exists");
@@ -115,8 +115,6 @@ namespace PainterPalApi.Controllers
             {
                 return NotFound();
             }
-
-            material.QuantityInStock = model.Quantity;
             await _context.SaveChangesAsync();
 
             return NoContent();

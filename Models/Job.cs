@@ -5,21 +5,18 @@ namespace PainterPalApi.Models
         public int Id { get; set; }
 
         public Customer Customer { get; set; }
-
-        public int ProductPreferenceId { get; set; }
-
-        public ProductPreferences PreferredProduct { get; set; }
-
         public int CustomerId { get; set; }
         public string JobName { get; set; }
-        public string JobDescription { get; set; }
+        public string JobNotes { get; set; }
         public string JobLocation { get; set; }
-        public JobStatus JobStatus { get; set; }
-
+        public JobStatus JobStatus { get; set; } = JobStatus.Pending;
+        public ICollection<string> Tags { get; set; } = new List<string>();
+        public ICollection<string> Tasks { get; set; } = new List<string>();
+        public ICollection<Colour> PreferredColours { get; set; } = new List<Colour>();
         public ICollection<JobEmployee> EmployeeAssignments { get; set; } = new List<JobEmployee>();
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-    
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? CompletionDate { get; set; }
 
@@ -27,7 +24,8 @@ namespace PainterPalApi.Models
         public DateTime EndDate { get; set; }
     }
 
-    public enum JobStatus {
+    public enum JobStatus
+    {
         Pending = 0,
         InProgress = 1,
         OnHold = 2,

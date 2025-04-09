@@ -7,6 +7,6 @@ namespace PainterPalApi.Models
         public Job Job { get; set; }
         public int EmployeeId { get; set; }
         public User Employee { get; set; }
-        public DateTime AssignedDate { get; set; }
+        public DateTime AssignedDate { get; set; } = DateTime.UtcNow;
     }
 }

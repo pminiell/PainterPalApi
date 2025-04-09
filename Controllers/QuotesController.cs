@@ -29,7 +29,7 @@ namespace PainterPalApi.Controllers
             var query = _context.Quotes
                 .Include(q => q.Customer)
                 .AsQueryable();
-            
+
             // Filter by status if provided
             if (status.HasValue)
             {
@@ -44,8 +44,7 @@ namespace PainterPalApi.Controllers
         public async Task<ActionResult<Quote>> GetQuote(int id)
         {
             var quote = await _context.Quotes
-                .Include(q => q.Customer)
-                .Include(q => q.Job)
+                .Include(q => q.Customer) 
                 .FirstOrDefaultAsync(q => q.Id == id);
 
             if (quote == null)
@@ -61,8 +60,7 @@ namespace PainterPalApi.Controllers
         public async Task<ActionResult<IEnumerable<Quote>>> GetCustomerQuotes(int customerId)
         {
             var customerQuotes = await _context.Quotes
-                .Where(q => q.CustomerId == customerId)
-                .Include(q => q.Job)
+                .Where(q => q.CustomerId == customerId)  
                 .ToListAsync();
 
             return customerQuotes;
@@ -158,7 +156,7 @@ namespace PainterPalApi.Controllers
             var job = new Job
             {
                 CustomerId = quote.CustomerId,
-                JobDescription = quote.QuoteDescription,
+                JobNotes = quote.QuoteNotes,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddDays(7), // Example duration
                 JobStatus = JobStatus.Pending
