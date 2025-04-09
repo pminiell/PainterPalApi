@@ -15,6 +15,7 @@ namespace PainterPalApi.Data
         public DbSet<JobEmployee> JobEmployees { get; set; }
         public DbSet<Material> Materials { get; set; }
         public DbSet<JobMaterial> JobMaterials { get; set; }
+        public DbSet<JobTask> JobTasks { get; set; }
 
         public DbSet<UserMaterialPreference> UserMaterialPreferences { get; set; }
         public DbSet<UserPreferredColour> UserPreferredColours { get; set; }

@@ -59,6 +59,7 @@ namespace PainterPalApi.Controllers
             var job = await _context.Jobs
                 .Include(j => j.Customer)
                 .Include(j => j.PreferredColours)
+                .Include(j => j.JobTaskList)  // Include JobTaskList
                 .FirstOrDefaultAsync(j => j.Id == id);
 
             if (job == null)
@@ -75,7 +76,19 @@ namespace PainterPalApi.Controllers
                 JobLocation = job.JobLocation,
                 JobStatus = job.JobStatus,
                 Tags = job.Tags,
-                Tasks = job.Tasks,
+                // Map JobTaskList to JobTaskDTO list
+                JobTaskList = job.JobTaskList.Select(t => new JobTaskDTO
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    Description = t.Description,
+                    Priority = t.Priority,
+                    IsCompleted = t.IsCompleted,
+                    CreatedAt = t.CreatedAt,
+                    UpdatedAt = t.UpdatedAt,
+                    CompletedAt = t.CompletedAt,
+                    JobId = t.JobId
+                }).ToList(),
                 StartDate = job.StartDate,
                 EndDate = job.EndDate,
                 CreatedAt = job.CreatedAt,
@@ -115,7 +128,7 @@ namespace PainterPalApi.Controllers
                 StartDate = jobDto.StartDate.ToUniversalTime(),
                 EndDate = jobDto.EndDate.ToUniversalTime(),
                 Tags =  jobDto.Tags ?? new List<string>(), // Initialize to empty list if null
-                Tasks = jobDto.Tasks ?? new List<string>(), // Initialize to empty list if null
+                JobTaskList = jobDto.JobTaskList ?? new List<JobTask>(), // Initialize to empty list if null
                 JobStatus = JobStatus.Pending,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,

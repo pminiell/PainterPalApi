@@ -11,7 +11,9 @@ namespace PainterPalApi.Models
         public string JobLocation { get; set; }
         public JobStatus JobStatus { get; set; } = JobStatus.Pending;
         public ICollection<string> Tags { get; set; } = new List<string>();
-        public ICollection<string> Tasks { get; set; } = new List<string>();
+        
+        public ICollection<JobTask> JobTaskList { get; set; } = new List<JobTask>();
+        
         public ICollection<Colour> PreferredColours { get; set; } = new List<Colour>();
         public ICollection<JobEmployee> EmployeeAssignments { get; set; } = new List<JobEmployee>();
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

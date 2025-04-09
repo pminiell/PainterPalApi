@@ -12,7 +12,7 @@ namespace PainterPalApi.DTOs
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public List<string> Tags { get; set; } = new List<string>();
-        public List<string> Tasks { get; set; } = new List<string>();
+        public List<JobTask> JobTaskList { get; set; } = new List<JobTask>();
         public List<int> PreferredColourIds { get; set; } = new List<int>();
     }
     
@@ -33,7 +33,7 @@ namespace PainterPalApi.DTOs
         public string JobLocation { get; set; }
         public JobStatus JobStatus { get; set; }
         public ICollection<string> Tags { get; set; } = new List<string>();
-        public ICollection<string> Tasks { get; set; } = new List<string>();
+        public ICollection<JobTaskDTO> JobTaskList { get; set; } = new List<JobTaskDTO>();
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime CreatedAt { get; set; }
