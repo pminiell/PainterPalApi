@@ -4,10 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using PainterPalApi.Data;
 using PainterPalApi.DTOs;
 using PainterPalApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PainterPalApi.Controllers
 {
@@ -29,14 +25,14 @@ namespace PainterPalApi.Controllers
             var query = _context.Jobs
                 .Include(j => j.Customer)
                 .AsQueryable();
-            
+
             if (Enum.TryParse<JobStatus>(status, out var jobStatus))
             {
                 query = query.Where(j => j.JobStatus == jobStatus);
             }
-            
+
             var jobs = await query.ToListAsync();
-            
+
             // Map to DTO
             var jobDTOs = jobs.Select(j => new JobSummaryDTO
             {
@@ -119,22 +115,24 @@ namespace PainterPalApi.Controllers
         //create a jobcreation DTO for only necessary fields
         public async Task<ActionResult<Job>> CreateJob(CreateJobDTO jobDto)
         {
-            
-            var job = new Job {
+
+            var job = new Job
+            {
                 CustomerId = jobDto.CustomerId,
                 JobName = jobDto.JobName,
                 JobNotes = jobDto.JobNotes ?? string.Empty,
                 JobLocation = jobDto.JobLocation,
                 StartDate = jobDto.StartDate.ToUniversalTime(),
                 EndDate = jobDto.EndDate.ToUniversalTime(),
-                Tags =  jobDto.Tags ?? new List<string>(), // Initialize to empty list if null
+                Tags = jobDto.Tags ?? new List<string>(), // Initialize to empty list if null
                 JobTaskList = jobDto.JobTaskList ?? new List<JobTask>(), // Initialize to empty list if null
                 JobStatus = JobStatus.Pending,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
             };
 
-            if(jobDto.PreferredColourIds?.Count > 0){
+            if (jobDto.PreferredColourIds?.Count > 0)
+            {
                 var colours = await _context.Colours
                     .Where(c => jobDto.PreferredColourIds.Contains(c.Id))
                     .ToListAsync();
@@ -144,7 +142,7 @@ namespace PainterPalApi.Controllers
                     job.PreferredColours.Add(colour);
                 }
             }
-            
+
             _context.Jobs.Add(job);
             await _context.SaveChangesAsync();
 
@@ -161,7 +159,7 @@ namespace PainterPalApi.Controllers
             }
 
             _context.Entry(job).State = EntityState.Modified;
-            
+
             // Don't modify creation date
             _context.Entry(job).Property(x => x.CreatedAt).IsModified = false;
 
@@ -194,10 +192,10 @@ namespace PainterPalApi.Controllers
             }
 
             job.JobStatus = model.Status;
-            
+
             // If status is "Completed", set completion date
             if (model.Status.Equals("Completed"))
-            { 
+            {
                 job.CompletionDate = DateTime.UtcNow;
             }
 
@@ -304,5 +302,5 @@ namespace PainterPalApi.Controllers
     public class EmployeeAssignmentModel
     {
         public int EmployeeId { get; set; }
-    } 
+    }
 }

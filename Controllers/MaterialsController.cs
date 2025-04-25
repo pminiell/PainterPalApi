@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PainterPalApi.Data;
 using PainterPalApi.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 namespace PainterPalApi.Controllers
 {
     [Route("api/[controller]")]

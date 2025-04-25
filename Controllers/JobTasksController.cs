@@ -5,11 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using PainterPalApi.Data;
 using PainterPalApi.DTOs;
 using PainterPalApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace PainterPalApi.Controllers
 {
     [Route("api/[controller]")]

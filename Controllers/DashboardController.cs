@@ -1,9 +1,7 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PainterPalApi.Data;
-using System.Linq;
 using PainterPalApi.Models;
 
 namespace PainterPalApi.Controllers
@@ -73,11 +71,12 @@ namespace PainterPalApi.Controllers
 
             // Get the total number of jobs per month (for the last 6 months)
             var sixMonthsAgo = DateTime.Now.AddMonths(-6);
-            
+
             var jobsByMonth = await _context.Jobs
                 .Where(j => j.CreatedAt >= sixMonthsAgo)
                 .GroupBy(j => new { j.CreatedAt.Year, j.CreatedAt.Month })
-                .Select(g => new { 
+                .Select(g => new
+                {
                     Year = g.Key.Year,
                     Month = g.Key.Month,
                     Count = g.Count()
@@ -89,7 +88,8 @@ namespace PainterPalApi.Controllers
             return new DashboardStats
             {
                 JobCompletionRate = completionRate,
-                JobsByMonth = jobsByMonth.Select(j => new MonthlyJobCount { 
+                JobsByMonth = jobsByMonth.Select(j => new MonthlyJobCount
+                {
                     Year = j.Year,
                     Month = j.Month,
                     Count = j.Count

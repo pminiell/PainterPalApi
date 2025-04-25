@@ -3,11 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PainterPalApi.Data;
 using PainterPalApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace PainterPalApi.Controllers
 {
     [Route("api/[controller]")]
@@ -27,13 +22,13 @@ namespace PainterPalApi.Controllers
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers([FromQuery] string search = null)
         {
             var query = _context.Customers.AsQueryable();
-            
+
             // Filter by search term if provided
             if (!string.IsNullOrEmpty(search))
             {
                 search = search.ToLower();
-                query = query.Where(c => 
-                    c.CustomerName.ToLower().Contains(search) || 
+                query = query.Where(c =>
+                    c.CustomerName.ToLower().Contains(search) ||
                     c.CustomerEmail.ToLower().Contains(search) ||
                     c.CustomerPhone.Contains(search));
             }
@@ -93,14 +88,14 @@ namespace PainterPalApi.Controllers
         public async Task<ActionResult<Customer>> CreateCustomer(Customer customer)
         {
             // Validate email is unique
-            if (!string.IsNullOrEmpty(customer.CustomerEmail) && 
+            if (!string.IsNullOrEmpty(customer.CustomerEmail) &&
                 await _context.Customers.AnyAsync(c => c.CustomerEmail == customer.CustomerEmail))
             {
                 return BadRequest("A customer with this email already exists");
             }
 
             // Validate phone is unique
-            if (!string.IsNullOrEmpty(customer.CustomerPhone) && 
+            if (!string.IsNullOrEmpty(customer.CustomerPhone) &&
                 await _context.Customers.AnyAsync(c => c.CustomerPhone == customer.CustomerPhone))
             {
                 return BadRequest("A customer with this phone number already exists");
@@ -123,16 +118,16 @@ namespace PainterPalApi.Controllers
             }
 
             // Check for email uniqueness (excluding current customer)
-            if (!string.IsNullOrEmpty(customer.CustomerEmail) && 
-                await _context.Customers.AnyAsync(c => 
+            if (!string.IsNullOrEmpty(customer.CustomerEmail) &&
+                await _context.Customers.AnyAsync(c =>
                     c.CustomerEmail == customer.CustomerEmail && c.Id != id))
             {
                 return BadRequest("A customer with this email already exists");
             }
 
             // Check for phone uniqueness (excluding current customer)
-            if (!string.IsNullOrEmpty(customer.CustomerPhone) && 
-                await _context.Customers.AnyAsync(c => 
+            if (!string.IsNullOrEmpty(customer.CustomerPhone) &&
+                await _context.Customers.AnyAsync(c =>
                     c.CustomerPhone == customer.CustomerPhone && c.Id != id))
             {
                 return BadRequest("A customer with this phone number already exists");

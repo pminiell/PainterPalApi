@@ -1,11 +1,8 @@
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PainterPalApi.Data;
 using PainterPalApi.Models;
@@ -75,7 +72,7 @@ namespace PainterPalApi.Controllers
         {
             // Extract user id from the token - this assumes you have authentication middleware set up
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            
+
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized();
@@ -90,7 +87,7 @@ namespace PainterPalApi.Controllers
 
             // Don't return the password in the response
             user.PasswordHash = null;
-            
+
             return user;
         }
 

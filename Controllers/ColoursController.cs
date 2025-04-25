@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PainterPalApi.Data;
 using PainterPalApi.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace PainterPalApi.Controllers
 {
@@ -89,14 +87,14 @@ namespace PainterPalApi.Controllers
             }
 
             // Check for name uniqueness (excluding current colour)
-            if (await _context.Colours.AnyAsync(c => 
+            if (await _context.Colours.AnyAsync(c =>
                 c.ColourName == colour.ColourName && c.Id != id))
             {
                 return BadRequest("A colour with this name already exists");
             }
 
             // Check for code uniqueness (excluding current colour)
-            if (await _context.Colours.AnyAsync(c => 
+            if (await _context.Colours.AnyAsync(c =>
                 c.ColourCode == colour.ColourCode && c.Id != id))
             {
                 return BadRequest("A colour with this code already exists");

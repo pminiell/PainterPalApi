@@ -3,11 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PainterPalApi.Data;
 using PainterPalApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace PainterPalApi.Controllers
 {
     [Route("api/[controller]")]
@@ -44,7 +39,7 @@ namespace PainterPalApi.Controllers
         public async Task<ActionResult<Quote>> GetQuote(int id)
         {
             var quote = await _context.Quotes
-                .Include(q => q.Customer) 
+                .Include(q => q.Customer)
                 .FirstOrDefaultAsync(q => q.Id == id);
 
             if (quote == null)
@@ -60,7 +55,7 @@ namespace PainterPalApi.Controllers
         public async Task<ActionResult<IEnumerable<Quote>>> GetCustomerQuotes(int customerId)
         {
             var customerQuotes = await _context.Quotes
-                .Where(q => q.CustomerId == customerId)  
+                .Where(q => q.CustomerId == customerId)
                 .ToListAsync();
 
             return customerQuotes;
