@@ -15,7 +15,7 @@ using FluentValidation.AspNetCore;
 using PainterPalApi.Validators;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<EmployeeDTOValidator>().RegisterValidatorsFromAssemblyContaining<JobDTOValidator>());
-builder.Services.AddAutoMapper(typeof(EmployeeProfile).Assembly);
+builder.Services.AddAutoMapper(cfg => cfg.LicenseKey = builder.Configuration["AutoMapperLicense"] ,typeof(EmployeeProfile).Assembly);
 
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IQuoteService, QuoteService>();

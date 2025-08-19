@@ -1,11 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "vzk42H9vc/0=",
+  "dgSpecHash": "rotv73OILUo=",
   "success": true,
   "projectFilePath": "/home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/PainterPalApi.csproj",
   "expectedPackageFiles": [
-    "/home/pminiell/.nuget/packages/automapper/12.0.1/automapper.12.0.1.nupkg.sha512",
-    "/home/pminiell/.nuget/packages/automapper.extensions.microsoft.dependencyinjection/12.0.1/automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
+    "/home/pminiell/.nuget/packages/automapper/15.0.1/automapper.15.0.1.nupkg.sha512",
     "/home/pminiell/.nuget/packages/fluentvalidation/11.11.0/fluentvalidation.11.11.0.nupkg.sha512",
     "/home/pminiell/.nuget/packages/fluentvalidation.aspnetcore/11.3.1/fluentvalidation.aspnetcore.11.3.1.nupkg.sha512",
     "/home/pminiell/.nuget/packages/fluentvalidation.dependencyinjectionextensions/11.11.0/fluentvalidation.dependencyinjectionextensions.11.11.0.nupkg.sha512",
@@ -21,7 +20,6 @@
     "/home/pminiell/.nuget/packages/microsoft.codeanalysis.csharp.workspaces/4.8.0/microsoft.codeanalysis.csharp.workspaces.4.8.0.nupkg.sha512",
     "/home/pminiell/.nuget/packages/microsoft.codeanalysis.workspaces.common/4.8.0/microsoft.codeanalysis.workspaces.common.4.8.0.nupkg.sha512",
     "/home/pminiell/.nuget/packages/microsoft.codeanalysis.workspaces.msbuild/4.8.0/microsoft.codeanalysis.workspaces.msbuild.4.8.0.nupkg.sha512",
-    "/home/pminiell/.nuget/packages/microsoft.csharp/4.7.0/microsoft.csharp.4.7.0.nupkg.sha512",
     "/home/pminiell/.nuget/packages/microsoft.entityframeworkcore/9.0.3/microsoft.entityframeworkcore.9.0.3.nupkg.sha512",
     "/home/pminiell/.nuget/packages/microsoft.entityframeworkcore.abstractions/9.0.3/microsoft.entityframeworkcore.abstractions.9.0.3.nupkg.sha512",
     "/home/pminiell/.nuget/packages/microsoft.entityframeworkcore.analyzers/9.0.3/microsoft.entityframeworkcore.analyzers.9.0.3.nupkg.sha512",
