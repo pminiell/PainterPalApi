@@ -21,4 +21,11 @@ namespace PainterPalApi.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow ;
    }
+
+    public enum UserRole
+    {
+        Admin,
+        BusinessOwner,
+        Employee
+    }
 }

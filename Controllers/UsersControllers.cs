@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PainterPalApi.Data;
-using PainterPalApi.Models;
+using PainterPalApi.DTOs;
+using PainterPalApi.Interfaces;
 
 namespace PainterPalApi.Controllers
 {
@@ -9,88 +8,64 @@ namespace PainterPalApi.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IEmployeeService _employeeService;
 
-        public UsersController(ApplicationDbContext context)
+        public UsersController(IEmployeeService employeeService)
         {
-            _context = context;
+            _employeeService = employeeService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<EmployeeDTO>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var employees = await _employeeService.GetEmployeesAsync();
+            return Ok(employees);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<EmployeeDTO>> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
+            var employee = await _employeeService.GetEmployeeByIdAsync(id);
+            if (employee == null)
             {
                 return NotFound();
             }
-
-            return user;
+            return Ok(employee);
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<EmployeeDTO>> PostUser(EmployeeDTO employeeDto)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            var createdEmployee = await _employeeService.CreateEmployeeAsync(employeeDto);
+            return CreatedAtAction(nameof(GetUser), new { id = createdEmployee.Id }, createdEmployee);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, EmployeeDTO employeeDto)
         {
-            if (id != user.Id)
+            if (id != employeeDto.Id)
             {
-                return BadRequest();
+                return BadRequest("ID mismatch");
             }
 
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
+            var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, employeeDto);
+            if (updatedEmployee == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var result = await _employeeService.DeleteEmployeeAsync(id);
+            if (!result)
             {
                 return NotFound();
             }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
         }
     }
 }
+

@@ -5,10 +5,23 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PainterPalApi.Data;
 
-var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
-builder.Services.AddControllers();
+using PainterPalApi.Interfaces;
+using PainterPalApi.Services;
+using PainterPalApi.Profiles;
+
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using PainterPalApi.Validators;
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<EmployeeDTOValidator>().RegisterValidatorsFromAssemblyContaining<JobDTOValidator>());
+builder.Services.AddAutoMapper(typeof(EmployeeProfile).Assembly);
+
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IQuoteService, QuoteService>();
+builder.Services.AddScoped<IMaterialService, MaterialService>();
+builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<IJobTaskService, JobTaskService>();
 
 // Configure Swagger
 builder.Services.AddEndpointsApiExplorer();

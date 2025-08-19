@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PainterPalApi.Data;
+using PainterPalApi.DTOs;
+using PainterPalApi.Interfaces;
 using PainterPalApi.Models;
+
 namespace PainterPalApi.Controllers
 {
     [Route("api/[controller]")]
@@ -10,108 +11,57 @@ namespace PainterPalApi.Controllers
     [Authorize] // Basic authorization for all endpoints
     public class QuotesController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IQuoteService _quoteService;
 
-        public QuotesController(ApplicationDbContext context)
+        public QuotesController(IQuoteService quoteService)
         {
-            _context = context;
+            _quoteService = quoteService;
         }
 
         // GET: api/Quotes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Quote>>> GetQuotes([FromQuery] QuoteStatus? status = null)
+        public async Task<ActionResult<IEnumerable<QuoteDTO>>> GetQuotes([FromQuery] QuoteStatus? status = null)
         {
-            var query = _context.Quotes
-                .Include(q => q.Customer)
-                .AsQueryable();
-
-            // Filter by status if provided
-            if (status.HasValue)
-            {
-                query = query.Where(q => q.QuoteStatus == status.Value);
-            }
-
-            return await query.ToListAsync();
+            var quotes = await _quoteService.GetQuotesAsync(status);
+            return Ok(quotes);
         }
 
         // GET: api/Quotes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Quote>> GetQuote(int id)
+        public async Task<ActionResult<QuoteDTO>> GetQuote(int id)
         {
-            var quote = await _context.Quotes
-                .Include(q => q.Customer)
-                .FirstOrDefaultAsync(q => q.Id == id);
-
+            var quote = await _quoteService.GetQuoteByIdAsync(id);
             if (quote == null)
             {
                 return NotFound();
             }
-
-            return quote;
-        }
-
-        // GET: api/Quotes/customer/5
-        [HttpGet("customer/{customerId}")]
-        public async Task<ActionResult<IEnumerable<Quote>>> GetCustomerQuotes(int customerId)
-        {
-            var customerQuotes = await _context.Quotes
-                .Where(q => q.CustomerId == customerId)
-                .ToListAsync();
-
-            return customerQuotes;
+            return Ok(quote);
         }
 
         // POST: api/Quotes
         [HttpPost]
         [Authorize(Policy = "BusinessOwnerPolicy")] // Only business owners can create quotes
-        public async Task<ActionResult<Quote>> CreateQuote(Quote quote)
+        public async Task<ActionResult<QuoteDTO>> CreateQuote(QuoteDTO quoteDto)
         {
-            // Validate customer exists
-            if (!await _context.Customers.AnyAsync(c => c.Id == quote.CustomerId))
-            {
-                return BadRequest("Customer does not exist");
-            }
-
-            // Set default status to Pending if not specified
-            if (quote.QuoteStatus == 0) // Default enum value
-            {
-                quote.QuoteStatus = QuoteStatus.Pending;
-            }
-
-            _context.Quotes.Add(quote);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetQuote), new { id = quote.Id }, quote);
+            var createdQuote = await _quoteService.CreateQuoteAsync(quoteDto);
+            return CreatedAtAction(nameof(GetQuote), new { id = createdQuote.Id }, createdQuote);
         }
 
         // PUT: api/Quotes/5
         [HttpPut("{id}")]
         [Authorize(Policy = "BusinessOwnerPolicy")] // Only business owners can update quotes
-        public async Task<IActionResult> UpdateQuote(int id, Quote quote)
+        public async Task<IActionResult> UpdateQuote(int id, QuoteDTO quoteDto)
         {
-            if (id != quote.Id)
+            if (id != quoteDto.Id)
             {
-                return BadRequest();
+                return BadRequest("ID mismatch");
             }
 
-            _context.Entry(quote).State = EntityState.Modified;
-
-            try
+            var updatedQuote = await _quoteService.UpdateQuoteAsync(id, quoteDto);
+            if (updatedQuote == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!QuoteExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
             return NoContent();
         }
 
@@ -119,20 +69,20 @@ namespace PainterPalApi.Controllers
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateQuoteStatus(int id, [FromBody] QuoteStatusUpdateModel model)
         {
-            var quote = await _context.Quotes.FindAsync(id);
+            var quote = await _quoteService.GetQuoteByIdAsync(id);
             if (quote == null)
             {
                 return NotFound();
             }
 
-            // Validate the status is a valid enum value
-            if (!Enum.IsDefined(typeof(QuoteStatus), model.Status))
-            {
-                return BadRequest("Invalid status value");
-            }
-
+            // Update the status using the service
             quote.QuoteStatus = model.Status;
-            await _context.SaveChangesAsync();
+            var updatedQuote = await _quoteService.UpdateQuoteAsync(id, quote);
+
+            if (updatedQuote == null)
+            {
+                return NotFound();
+            }
 
             return NoContent();
         }
@@ -140,32 +90,27 @@ namespace PainterPalApi.Controllers
         // POST: api/Quotes/5/convert
         [HttpPost("{id}/convert")]
         [Authorize(Policy = "BusinessOwnerPolicy")] // Only business owners can convert quotes to jobs
-        public async Task<IActionResult> ConvertQuoteToJob(int id)
+        public async Task<ActionResult<JobDTO>> ConvertQuoteToJob(int id)
         {
-            var quote = await _context.Quotes.FindAsync(id);
-            if (quote == null)
+            var job = await _quoteService.ConvertQuoteToJobAsync(id);
+            if (job == null)
             {
                 return NotFound();
             }
-
-            var job = new Job
-            {
-                CustomerId = quote.CustomerId,
-                JobNotes = quote.QuoteNotes,
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddDays(7), // Example duration
-                JobStatus = JobStatus.Pending
-            };
-
-            _context.Jobs.Add(job);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(JobsController.GetJob), "Jobs", new { id = job.Id }, job);
+            return CreatedAtAction("GetJob", "Jobs", new { id = job.Id }, job);
         }
 
-        private bool QuoteExists(int id)
+        // DELETE: api/Quotes/5
+        [HttpDelete("{id}")]
+        [Authorize(Policy = "BusinessOwnerPolicy")] // Only business owners can delete quotes
+        public async Task<IActionResult> DeleteQuote(int id)
         {
-            return _context.Quotes.Any(e => e.Id == id);
+            var result = await _quoteService.DeleteQuoteAsync(id);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
         }
     }
 

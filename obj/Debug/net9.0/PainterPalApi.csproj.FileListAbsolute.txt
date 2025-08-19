@@ -141,3 +141,8 @@
 /home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/bin/Debug/net9.0/Swashbuckle.AspNetCore.Swagger.dll
 /home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll
+/home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/bin/Debug/net9.0/AutoMapper.dll
+/home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/bin/Debug/net9.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+/home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/bin/Debug/net9.0/FluentValidation.dll
+/home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/bin/Debug/net9.0/FluentValidation.AspNetCore.dll
+/home/pminiell/Documents/Coding/Dotnet/PainterPal/PainterPalApi/bin/Debug/net9.0/FluentValidation.DependencyInjectionExtensions.dll
